@@ -2,6 +2,8 @@ package com.mygdx.snake;
 
 import com.badlogic.gdx.ApplicationAdapter;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -18,6 +20,7 @@ public class Game extends ApplicationAdapter {
 	Snake snake;
 	Food food;
 	boolean gameEnd = false;
+	boolean PlayerControl = true;
 	
 	@Override
 	public void create () {
@@ -29,7 +32,8 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void update() {
-		snake.update(food);
+		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) PlayerControl = !PlayerControl;
+		snake.update(food, PlayerControl);
 		gameEnd = snake.checkGameEnd();
 		stagger();
 	}
@@ -46,6 +50,11 @@ public class Game extends ApplicationAdapter {
 		camera.update();
 		if (!gameEnd) {
 			update();
+		} else {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+				gameEnd = false;
+				create();
+			}
 		}
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin(ShapeType.Filled);
