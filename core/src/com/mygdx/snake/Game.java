@@ -4,6 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -14,17 +16,19 @@ import static java.lang.Thread.sleep;
 public class Game extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 	OrthographicCamera camera;
-	final static int WIDTH = 800;
-	final static int HEIGHT = 600;
-	final static int SQUARE_SIZE = 20;
+	SpriteBatch batch;
+	public final static int WIDTH = 800;
+	public final static int HEIGHT = 600;
+	public final static int SQUARE_SIZE = 20;
 	Snake snake;
 	Food food;
 	boolean gameEnd = false;
-	boolean PlayerControl = true;
+	boolean PlayerControl = false;
 	
 	@Override
 	public void create () {
 		shapeRenderer = new ShapeRenderer();
+		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WIDTH, HEIGHT);
 		snake = new Snake(10 * SQUARE_SIZE, 8 * SQUARE_SIZE);
@@ -37,9 +41,21 @@ public class Game extends ApplicationAdapter {
 		gameEnd = snake.checkGameEnd();
 		stagger();
 	}
+	private void drawStart() {
+		batch.begin();
+		BitmapFont font = new BitmapFont();
+		font.draw(batch, "Press M to auto-play", WIDTH/2, HEIGHT/2, 0, WIDTH, false);
+		batch.end();
+	}
+	private void drawEnd() {
+		batch.begin();
+		BitmapFont font = new BitmapFont();
+		font.draw(batch, "Press SPACE to restart", WIDTH/2, HEIGHT/2, 0, WIDTH, false);
+		batch.end();
+	}
 	private void stagger() {
 		try {
-			sleep(100);
+			sleep(1);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -50,7 +66,9 @@ public class Game extends ApplicationAdapter {
 		camera.update();
 		if (!gameEnd) {
 			update();
+			drawStart();
 		} else {
+			drawEnd();
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 				gameEnd = false;
 				create();
@@ -67,5 +85,6 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		shapeRenderer.dispose();
+		batch.dispose();
 	}
 }

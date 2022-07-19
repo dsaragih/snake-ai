@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.snake.algos.AStar;
 
 import java.util.ArrayList;
 
 public class Snake {
     public final ArrayList<Square> body = new ArrayList<>();
-    private Square head;
-    private int dx, dy;
+    public Square head;
+    private float dx, dy;
 
     public Snake(int x, int y) {
         // Initialize the head of the snake
@@ -24,6 +25,13 @@ public class Snake {
             body.remove(body.size() - 1);
         }
         if (PlayerControl) dirCalc();
+        else {
+            AStar algo = new AStar(this, food.x, food.y);
+            Point dir = algo.solve();
+            dx = dir.x;
+            dy = dir.y;
+            System.out.println(dx + " " + dy);
+        }
         float new_x = head.x + dx * Game.SQUARE_SIZE;
         float new_y = head.y + dy * Game.SQUARE_SIZE;
         head = new Square(new_x, new_y, Color.GREEN);

@@ -25,6 +25,7 @@ public class Food extends Square{
             }
         }
         return new Point(x, y);
+        //return new Point(x, Game.HEIGHT - y);
     }
 
 }
