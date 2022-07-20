@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.snake.algos.AStar;
+import com.mygdx.snake.algos.HamiltonianCycle;
 
 import java.util.ArrayList;
 
@@ -26,8 +27,10 @@ public class Snake {
         }
         if (PlayerControl) dirCalc();
         else {
-            AStar algo = new AStar(this, food.x, food.y);
-            Point dir = algo.solve();
+//            AStar algo = new AStar(this, food.x, food.y);
+//            Point dir = algo.solve();
+            HamiltonianCycle algo = new HamiltonianCycle(new Point(head.x, head.y));
+            Point dir = algo.solve(dx, dy);
             dx = dir.x;
             dy = dir.y;
             System.out.println(dx + " " + dy);
