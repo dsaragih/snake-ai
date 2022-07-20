@@ -24,8 +24,7 @@ public class Food extends Square{
                 return this.findNewPos(snake);
             }
         }
-        return new Point(x, y);
-        //return new Point(x, Game.HEIGHT - y);
+        return Game.grid.getPoint(x, y);
     }
 
 }

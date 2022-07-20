@@ -32,6 +32,7 @@ public class Snake {
             dy = dir.y;
             System.out.println(dx + " " + dy);
         }
+
         float new_x = head.x + dx * Game.SQUARE_SIZE;
         float new_y = head.y + dy * Game.SQUARE_SIZE;
         head = new Square(new_x, new_y, Color.GREEN);

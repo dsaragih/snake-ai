@@ -22,6 +22,7 @@ public class Game extends ApplicationAdapter {
 	public final static int SQUARE_SIZE = 20;
 	Snake snake;
 	Food food;
+	public static Grid grid;
 	boolean gameEnd = false;
 	boolean PlayerControl = false;
 	
@@ -31,6 +32,7 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WIDTH, HEIGHT);
+		grid = new Grid();
 		snake = new Snake(10 * SQUARE_SIZE, 8 * SQUARE_SIZE);
 		food = new Food(snake.body);
 	}
@@ -55,7 +57,7 @@ public class Game extends ApplicationAdapter {
 	}
 	private void stagger() {
 		try {
-			sleep(1);
+			sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
