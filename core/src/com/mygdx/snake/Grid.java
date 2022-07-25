@@ -32,18 +32,31 @@ public class Grid {
     public ArrayList<Point> getNeighbors(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();
         Point t;
-        if (checkNeighbor(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
-        if (checkNeighbor(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
-        if (checkNeighbor(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
-        if (checkNeighbor(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
+        if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
+        if (checkInBounds(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
+        if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
+        if (checkInBounds(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
 
         return tmp;
     }
-    private boolean checkNeighbor(Point p) {
+    private boolean checkInBounds(Point p) {
         if (p.x < 0 || p.x >= Game.WIDTH || p.y < 0 || p.y >= Game.HEIGHT) return false;
-//        for (Square s : body) {
-//            if (s.x == p.x && s.y == p.y) return false;
-//        }
         return true;
+    }
+    public ArrayList<Point> getNotLostNeighbors(Point p) {
+        ArrayList<Point> tmp = new ArrayList<>();
+        Point t;
+        if (checkDoesntLose(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
+
+        return tmp;
+    }
+    private boolean checkDoesntLose(Point p) {
+        for (Square s : body) {
+            if (s.x == p.x && s.y == p.y) return false;
+        }
+        return checkInBounds(p);
     }
 }

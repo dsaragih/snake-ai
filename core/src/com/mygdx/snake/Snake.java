@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.snake.algos.AStar;
 import com.mygdx.snake.algos.PresetHamCycle;
 import com.mygdx.snake.algos.RecursiveHamCycle;
 
@@ -28,10 +29,10 @@ public class Snake {
         }
         if (PlayerControl) dirCalc();
         else {
-            //AStar algo = new AStar(this, food.x, food.y);
             if (moveSeq == null) {
-                PresetHamCycle algo = new PresetHamCycle(new Point(head.x, head.y));
-                moveSeq = algo.findHamCycle();
+                //PresetHamCycle algo = new PresetHamCycle(new Point(head.x, head.y));
+                AStar algo = new AStar(this, food.x, food.y);
+                moveSeq = algo.solve();
             }
             Point p = moveSeq.get(curr % moveSeq.size());
             dx = p.x;
@@ -46,6 +47,9 @@ public class Snake {
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
             if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
+            AStar algo = new AStar(this, food.x, food.y);
+            moveSeq = algo.solve();
+            curr = 0;
             return true;
         }
         return false;

@@ -48,9 +48,6 @@ public class RecursiveHamCycle {
             Point next = path.get(i + 1);
             res.add(new Point((next.x - curr.x) / Game.SQUARE_SIZE, (next.y - curr.y) / Game.SQUARE_SIZE));
         }
-        for (Point p : res) {
-            System.out.println("dx: " + p.x + "dy: " + p.y);
-        }
         return res;
     }
 

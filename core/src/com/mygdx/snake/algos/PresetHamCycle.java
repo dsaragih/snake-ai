@@ -34,7 +34,6 @@ public class PresetHamCycle {
     public ArrayList<Point> findHamCycle() {
         Point dir;
         while(path.size() < this.size) {
-            System.out.println("x: " + head.x + " y: " + head.y);
             if (isOnEvenRow()) dir = new Point(-1, 0);
             else dir = new Point(1, 0);
 
@@ -44,7 +43,6 @@ public class PresetHamCycle {
             path.add(dir);
             head = head.add(dir.multiply(Game.SQUARE_SIZE));
         }
-        for (Point p : path) System.out.println("x: " + p.x + " y: "+ p.y);
         return path;
     }
 
