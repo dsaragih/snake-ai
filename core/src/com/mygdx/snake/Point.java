@@ -7,4 +7,10 @@ public class Point {
     public boolean equals (Point other) {
         return other.x == x && other.y == y;
     }
+    public Point add(Point other) {
+        return new Point(this.x + other.x, this.y + other.y);
+    }
+    public Point multiply(float scalar) {
+        return new Point(scalar * this.x, scalar * this.y);
+    }
 }

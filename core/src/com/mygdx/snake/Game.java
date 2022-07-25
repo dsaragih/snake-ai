@@ -17,8 +17,8 @@ public class Game extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 	OrthographicCamera camera;
 	SpriteBatch batch;
-	public final static int WIDTH = 200;
-	public final static int HEIGHT = 200;
+	public final static int WIDTH = 400;
+	public final static int HEIGHT = 400;
 	public final static int SQUARE_SIZE = 20;
 	Snake snake;
 	Food food;

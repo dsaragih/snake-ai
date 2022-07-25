@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.snake.algos.AStar;
-import com.mygdx.snake.algos.HamiltonianCycle;
+import com.mygdx.snake.algos.PresetHamCycle;
+import com.mygdx.snake.algos.RecursiveHamCycle;
 
 import java.util.ArrayList;
 
@@ -30,8 +30,8 @@ public class Snake {
         else {
             //AStar algo = new AStar(this, food.x, food.y);
             if (moveSeq == null) {
-                HamiltonianCycle algo = new HamiltonianCycle(new Point(head.x, head.y));
-                moveSeq = algo.getMoveSeq();
+                PresetHamCycle algo = new PresetHamCycle(new Point(head.x, head.y));
+                moveSeq = algo.findHamCycle();
             }
             Point p = moveSeq.get(curr % moveSeq.size());
             dx = p.x;
@@ -52,7 +52,7 @@ public class Snake {
     }
     public int checkGameEnd() {
         if (head.x == Game.WIDTH || head.x < 0 || head.y == Game.HEIGHT || head.y < 0) return 1;
-        System.out.println("Body size: " + body.size());
+        //System.out.println("Body size: " + body.size());
         for (Square s : body.subList(1, body.size())) {
             if (head.overlaps(s)) return 1;
         }
