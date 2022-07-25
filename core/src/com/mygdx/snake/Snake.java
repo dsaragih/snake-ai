@@ -24,9 +24,7 @@ public class Snake {
         dx = 1; // moves to the right
     }
     public void update(Food food, boolean PlayerControl) {
-        if (!checkCollideWithFood(food)) {
-            body.remove(body.size() - 1);
-        }
+
         if (PlayerControl) dirCalc();
         else {
             if (moveSeq == null) {
@@ -34,14 +32,18 @@ public class Snake {
                 AStar algo = new AStar(this, food.x, food.y);
                 moveSeq = algo.solve();
             }
-            Point p = moveSeq.get(curr % moveSeq.size());
-            dx = p.x;
-            dy = p.y;
-            curr++;
         }
+        if (!checkCollideWithFood(food)) {
+            body.remove(body.size() - 1);
+        }
+        Point p = moveSeq.get(curr % moveSeq.size());
+        dx = p.x;
+        dy = p.y;
+        curr++;
         float new_x = head.x + dx * Game.SQUARE_SIZE;
         float new_y = head.y + dy * Game.SQUARE_SIZE;
         head = new Square(new_x, new_y, Color.GREEN);
+        System.out.println("Headx: " + head.x + "heady: " + head.y);
         body.add(0, head);
     }
     private boolean checkCollideWithFood(Food food) {
@@ -49,6 +51,7 @@ public class Snake {
             if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
             AStar algo = new AStar(this, food.x, food.y);
             moveSeq = algo.solve();
+            for (Point p : moveSeq) System.out.println("seqx: " + p.x + " seqy: " + p.y);
             curr = 0;
             return true;
         }

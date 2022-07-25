@@ -46,6 +46,7 @@ public class Grid {
     public ArrayList<Point> getNotLostNeighbors(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();
         Point t;
+        //for (Square s : body) System.out.println("Body in grid: " + s.x + " " + s.y);
         if (checkDoesntLose(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
         if (checkDoesntLose(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
         if (checkDoesntLose(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));

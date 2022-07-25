@@ -33,12 +33,13 @@ public class AStar {
         start = Game.grid.getPoint(snake.head.x, snake.head.y);
         body = snake.body;
         end = Game.grid.getPoint(food_x, food_y);
+        Game.grid.update(snake.body);
         gScore = new HashMap<>();
         fScore = new HashMap<>();
         cameFrom = new HashMap<>();
         gScore.put(start, 0.0);
         int size = (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE);
-        if (body.size() > size / 4) {
+        if (body.size() > size / 10) {
             fScore.put(start, -h(start));
             shortest = false;
         }
@@ -59,8 +60,8 @@ public class AStar {
     }
     private void moveSnake(ArrayList<Point> seq, ArrayList<Square> body) {
         for (Point dir : seq) {
-            body.remove(body.size() - 1);
             Square head = body.get(0);
+            body.remove(body.size() - 1);
             float new_x = head.x + dir.x * Game.SQUARE_SIZE;
             float new_y = head.y + dir.y * Game.SQUARE_SIZE;
             head = new Square(new_x, new_y, Color.GREEN);
@@ -74,7 +75,8 @@ public class AStar {
         ArrayList<Point> res = new ArrayList<>();
         while(cameFrom.containsKey(curr)) {
             Point prev = cameFrom.get(curr);
-            res.add(new Point((curr.x - prev.x) / Game.SQUARE_SIZE, (curr.y - prev.y) / Game.SQUARE_SIZE));
+            System.out.println("Curr: " + curr.x + " " + curr.y);
+            res.add(0, new Point((curr.x - prev.x) / Game.SQUARE_SIZE, (curr.y - prev.y) / Game.SQUARE_SIZE));
             curr = prev;
         }
         return res;
@@ -83,7 +85,6 @@ public class AStar {
         return shortest ? short_solve() : long_solve();
     }
     private ArrayList<Point> long_solve() {
-        INF = Double.NEGATIVE_INFINITY;
         Point current;
         while (!q.isEmpty()) {
             current = q.poll();
@@ -92,24 +93,24 @@ public class AStar {
             if (current.equals(end)) {
                 return getMoveSequence(current);
             }
-            System.out.println("Curr removed: " + gScore.get(current));
+            //System.out.println("Curr removed: " + gScore.get(current));
             //if (!q.isEmpty()) System.out.println("After current: " + q.peek().x + " " + q.peek().y);
             for (Point neighbor : Game.grid.getNotLostNeighbors(current)) {
                 double tmpGScore = gScore.getOrDefault(current, INF) - 1;
-                //System.out.println(neighbor.x + " " + neighbor.y + "-" + tmpGScore + " - " + gScore.getOrDefault(neighbor, 900.0));
+                System.out.println("Neighs: " + neighbor.x + " " + neighbor.y );
                 if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
                     cameFrom.put(neighbor, current);
                     gScore.put(neighbor, tmpGScore);
-                    System.out.println(tmpGScore - h(neighbor));
+                    //System.out.println(tmpGScore - h(neighbor));
                     fScore.put(neighbor, tmpGScore - h(neighbor));
                     if (!q.contains(neighbor)) {
-                        System.out.println(q.add(neighbor));
+                        q.add(neighbor);
 
                     }
                 }
             }
         }
-        System.out.println("HERE? ");
+        System.out.println("SHFUSHDFI");
         return new ArrayList<>();
     }
     private ArrayList<Point> short_solve() {
@@ -121,18 +122,18 @@ public class AStar {
             if (current.equals(end)) {
                 return getMoveSequence(current);
             }
-            System.out.println("Curr removed: " + gScore.get(current));
+            //System.out.println("Curr removed: " + gScore.get(current));
             //if (!q.isEmpty()) System.out.println("After current: " + q.peek().x + " " + q.peek().y);
             for (Point neighbor : Game.grid.getNotLostNeighbors(current)) {
                 double tmpGScore = gScore.getOrDefault(current, INF) + 1;
-                //System.out.println(neighbor.x + " " + neighbor.y + "-" + tmpGScore + " - " + gScore.getOrDefault(neighbor, 900.0));
+                System.out.println("Neighs: " + neighbor.x + " " + neighbor.y );
                 if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
                     cameFrom.put(neighbor, current);
                     gScore.put(neighbor, tmpGScore);
-                    System.out.println(tmpGScore + h(neighbor));
+                    //System.out.println(tmpGScore + h(neighbor));
                     fScore.put(neighbor, tmpGScore + h(neighbor));
                     if (!q.contains(neighbor)) {
-                        System.out.println(q.add(neighbor));
+                        q.add(neighbor);
 
                     }
                 }
