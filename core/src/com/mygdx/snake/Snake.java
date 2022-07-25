@@ -13,12 +13,13 @@ public class Snake {
     public final ArrayList<Square> body = new ArrayList<>();
     public Square head;
     private float dx, dy;
+    private ArrayList<Point> moveSeq;
+    private int curr = 0;
 
     public Snake(int x, int y) {
         // Initialize the head of the snake
         head = new Square(x, y, Color.GREEN);
         body.add(head);
-        body.add(new Square(x - Game.SQUARE_SIZE, y, Color.GREEN));
         dx = 1; // moves to the right
     }
     public void update(Food food, boolean PlayerControl) {
@@ -27,15 +28,16 @@ public class Snake {
         }
         if (PlayerControl) dirCalc();
         else {
-//            AStar algo = new AStar(this, food.x, food.y);
-//            Point dir = algo.solve();
-            HamiltonianCycle algo = new HamiltonianCycle(new Point(head.x, head.y));
-            Point dir = algo.solve(dx, dy);
-            dx = dir.x;
-            dy = dir.y;
-            System.out.println(dx + " " + dy);
+            //AStar algo = new AStar(this, food.x, food.y);
+            if (moveSeq == null) {
+                HamiltonianCycle algo = new HamiltonianCycle(new Point(head.x, head.y));
+                moveSeq = algo.getMoveSeq();
+            }
+            Point p = moveSeq.get(curr % moveSeq.size());
+            dx = p.x;
+            dy = p.y;
+            curr++;
         }
-
         float new_x = head.x + dx * Game.SQUARE_SIZE;
         float new_y = head.y + dy * Game.SQUARE_SIZE;
         head = new Square(new_x, new_y, Color.GREEN);
@@ -43,17 +45,21 @@ public class Snake {
     }
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
-            food.renew(body);
+            if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
             return true;
         }
         return false;
     }
-    public boolean checkGameEnd() {
-        if (head.x == Game.WIDTH || head.x < 0 || head.y == Game.HEIGHT || head.y < 0) return true;
+    public int checkGameEnd() {
+        if (head.x == Game.WIDTH || head.x < 0 || head.y == Game.HEIGHT || head.y < 0) return 1;
+        System.out.println("Body size: " + body.size());
         for (Square s : body.subList(1, body.size())) {
-            if (head.overlaps(s)) return true;
+            if (head.overlaps(s)) return 1;
         }
-        return false;
+        if (body.size() == (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) {
+            return 2;
+        }
+        return 0;
     }
 
     private void dirCalc() {

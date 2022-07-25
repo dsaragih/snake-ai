@@ -17,13 +17,13 @@ public class Game extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 	OrthographicCamera camera;
 	SpriteBatch batch;
-	public final static int WIDTH = 800;
-	public final static int HEIGHT = 600;
+	public final static int WIDTH = 200;
+	public final static int HEIGHT = 200;
 	public final static int SQUARE_SIZE = 20;
 	Snake snake;
 	Food food;
 	public static Grid grid;
-	boolean gameEnd = false;
+	int gameEnd = 0;
 	boolean PlayerControl = false;
 	
 	@Override
@@ -32,27 +32,34 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WIDTH, HEIGHT);
-		grid = new Grid();
-		snake = new Snake(10 * SQUARE_SIZE, 8 * SQUARE_SIZE);
+		snake = new Snake(SQUARE_SIZE,  SQUARE_SIZE);
+		grid = new Grid(snake.body);
 		food = new Food(snake.body);
 	}
 
 	public void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) PlayerControl = !PlayerControl;
 		snake.update(food, PlayerControl);
+		grid.update(snake.body);
 		gameEnd = snake.checkGameEnd();
 		stagger();
 	}
 	private void drawStart() {
 		batch.begin();
 		BitmapFont font = new BitmapFont();
-		font.draw(batch, "Press M to auto-play", WIDTH/2, HEIGHT/2, 0, WIDTH, false);
+		font.draw(batch, "Press M to auto-play", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
 		batch.end();
 	}
 	private void drawEnd() {
 		batch.begin();
 		BitmapFont font = new BitmapFont();
-		font.draw(batch, "Press SPACE to restart", WIDTH/2, HEIGHT/2, 0, WIDTH, false);
+		font.draw(batch, "Press SPACE to restart", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
+		batch.end();
+	}
+	private void drawWin() {
+		batch.begin();
+		BitmapFont font = new BitmapFont();
+		font.draw(batch, "Winner! Press SPACE to restart!!", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
 		batch.end();
 	}
 	private void stagger() {
@@ -66,13 +73,20 @@ public class Game extends ApplicationAdapter {
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 1);
 		camera.update();
-		if (!gameEnd) {
+		if (gameEnd == 0) {
 			update();
 			drawStart();
-		} else {
+		} else if (gameEnd == 1) {
 			drawEnd();
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-				gameEnd = false;
+				gameEnd = 0;
+				create();
+			}
+		} else {
+			drawWin();
+			food.updateWin();
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+				gameEnd = 0;
 				create();
 			}
 		}
@@ -81,7 +95,6 @@ public class Game extends ApplicationAdapter {
 		snake.draw(shapeRenderer);
 		food.draw(shapeRenderer);
 		shapeRenderer.end();
-
 	}
 	
 	@Override

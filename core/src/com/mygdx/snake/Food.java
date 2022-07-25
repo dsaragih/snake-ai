@@ -26,5 +26,7 @@ public class Food extends Square{
         }
         return Game.grid.getPoint(x, y);
     }
-
+    public void updateWin() {
+        color = Color.GREEN;
+    }
 }
