@@ -3,7 +3,7 @@ package com.mygdx.snake;
 import com.badlogic.gdx.graphics.Color;
 import java.util.List;
 
-public class Food extends Square{
+public class Food extends Square {
 
     public Food(List<Square> snake) {
         super(0, 0, Color.RED);
@@ -24,7 +24,7 @@ public class Food extends Square{
                 return this.findNewPos(snake);
             }
         }
-        return Game.grid.getPoint(x, y);
+        return new Point(x, y);
     }
     public void updateWin() {
         color = Color.GREEN;

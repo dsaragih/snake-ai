@@ -1,16 +1,26 @@
 package com.mygdx.snake.algos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import com.mygdx.snake.Point;
 
-public class Node {
-    HashMap<Node, Integer> neighbors;
+public class Node extends Point {
     Node prev;
+    ArrayList<Node> next;
 
-    public Node() {
+    public Node(float x, float y) {
+        super(x, y);
         prev = null;
-        neighbors = new HashMap<>();
+        next = new ArrayList<>();
     }
-    public void addNeighbor(Node n, int distance) {
-        neighbors.put(n, distance);
+
+    public void setPrev(Node n) {prev = n;}
+
+    public void addNext(Node n) {next.add(n);}
+
+    public ArrayList<Node> getAdj() {
+        ArrayList<Node> tmp = new ArrayList<>(next);
+        tmp.add(0, prev);
+        return tmp;
     }
 }

@@ -29,30 +29,31 @@ public class Snake {
         else {
             if (moveSeq == null) {
                 //PresetHamCycle algo = new PresetHamCycle(new Point(head.x, head.y));
-                AStar algo = new AStar(this, food.x, food.y);
-                moveSeq = algo.solve();
+                callAlgo(food);
             }
         }
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
         }
-        Point p = moveSeq.get(curr % moveSeq.size());
+        if (curr >= moveSeq.size()) callAlgo(food);
+        Point p = moveSeq.get(curr);
         dx = p.x;
         dy = p.y;
         curr++;
         float new_x = head.x + dx * Game.SQUARE_SIZE;
         float new_y = head.y + dy * Game.SQUARE_SIZE;
         head = new Square(new_x, new_y, Color.GREEN);
-        System.out.println("Headx: " + head.x + "heady: " + head.y);
         body.add(0, head);
+    }
+    private void callAlgo(Food food) {
+        AStar algo = new AStar(this, food.x, food.y);
+        moveSeq = algo.solve();
+        curr = 0;
     }
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
             if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
-            AStar algo = new AStar(this, food.x, food.y);
-            moveSeq = algo.solve();
-            for (Point p : moveSeq) System.out.println("seqx: " + p.x + " seqy: " + p.y);
-            curr = 0;
+            callAlgo(food);
             return true;
         }
         return false;

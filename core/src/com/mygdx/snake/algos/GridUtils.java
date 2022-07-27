@@ -1,14 +1,16 @@
-package com.mygdx.snake;
+package com.mygdx.snake.algos;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.snake.Game;
+import com.mygdx.snake.Point;
+import com.mygdx.snake.Square;
 
 import java.util.ArrayList;
 
-public class Grid {
+public class GridUtils {
     public ArrayList<ArrayList<Point>> Matrix = new ArrayList<>();
-    private ArrayList<Square> body;
+    public ArrayList<Square> body;
 
-    public Grid(ArrayList<Square> body) {
+    public GridUtils(ArrayList<Square> body) {
         this.body = body;
         for (int i = 0; i < Game.HEIGHT; i += Game.SQUARE_SIZE) {
             ArrayList<Point> tmp = new ArrayList<>();
@@ -18,6 +20,9 @@ public class Grid {
             Matrix.add(tmp);
         }
     }
+    public GridUtils() {
+        this(new ArrayList<Square>());
+    }
     public Point getPoint(float x, float y) {
         int g_y = (int) (y / Game.SQUARE_SIZE);
         int g_x = (int) (x / Game.SQUARE_SIZE);
@@ -26,16 +31,17 @@ public class Grid {
     public Point getPoint(Point p) {
         return getPoint(p.x, p.y);
     }
+
     public void update(ArrayList<Square> body) {
         this.body = body;
     }
     public ArrayList<Point> getNeighbors(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();
         Point t;
-        if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
-        if (checkInBounds(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
-        if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
-        if (checkInBounds(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
+        if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
+        if (checkInBounds(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
+        if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
+        if (checkInBounds(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(getPoint(t));
 
         return tmp;
     }
@@ -46,11 +52,10 @@ public class Grid {
     public ArrayList<Point> getNotLostNeighbors(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();
         Point t;
-        //for (Square s : body) System.out.println("Body in grid: " + s.x + " " + s.y);
-        if (checkDoesntLose(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
-        if (checkDoesntLose(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(Game.grid.getPoint(t));
-        if (checkDoesntLose(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
-        if (checkDoesntLose(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(Game.grid.getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x + Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
+        if (checkDoesntLose(t = new Point(p.x, p.y + Game.SQUARE_SIZE))) tmp.add(getPoint(t));
 
         return tmp;
     }

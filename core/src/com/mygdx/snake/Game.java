@@ -20,9 +20,9 @@ public class Game extends ApplicationAdapter {
 	public final static int WIDTH = 400;
 	public final static int HEIGHT = 400;
 	public final static int SQUARE_SIZE = 20;
+	public final static int SIZE = (WIDTH * HEIGHT) / (SQUARE_SIZE * SQUARE_SIZE);
 	Snake snake;
 	Food food;
-	public static Grid grid;
 	int gameEnd = 0;
 	boolean PlayerControl = false;
 	
@@ -33,14 +33,12 @@ public class Game extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WIDTH, HEIGHT);
 		snake = new Snake(SQUARE_SIZE,  SQUARE_SIZE);
-		grid = new Grid(snake.body);
 		food = new Food(snake.body);
 	}
 
 	public void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) PlayerControl = !PlayerControl;
 		snake.update(food, PlayerControl);
-		grid.update(snake.body);
 		gameEnd = snake.checkGameEnd();
 		stagger();
 	}
