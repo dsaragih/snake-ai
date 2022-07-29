@@ -15,8 +15,8 @@ public class PrimMST {
 
     public PrimMST(Point head) {
         this.vertices = new HashMap<>();
-        primGrid = new PrimGridUtils();
         grid = new GridUtils();
+        primGrid = new PrimGridUtils(grid);
         this.mstSet = new ArrayList<>();
         start = grid.getPoint(head.x, head.y);
         for (ArrayList<Node> row : primGrid.Matrix) {
@@ -42,7 +42,7 @@ public class PrimMST {
             ArrayList<Node> neighbors = primGrid.getNeighbors(minNode);
             Collections.shuffle(neighbors);
             for (Node neighbor : neighbors) {
-                neighbor.setPrev(minNode);
+                if (!mstSet.contains(neighbor)) neighbor.setPrev(minNode);
                 /*
                 Normally we would have to check whether the value associated with neighbor is
                 geq the edge weight b/w minPoint and neighbor, but since all adj vertices have
@@ -51,7 +51,7 @@ public class PrimMST {
                 if (vertices.containsKey(neighbor)) vertices.put(neighbor, 1.0);
             }
         }
-        for (Point p : mstSet) System.out.println("x: " + p.x + " y: " + p.y);
+        for (Node p : mstSet) if (p.prev != null) System.out.println("x: " + p.x + " y: " + p.y + " Prev x: " + p.prev.x + " Prev y: " + p.prev.y);
     }
     private Node min() {
         Iterator<Map.Entry<Node, Double>> entries = vertices.entrySet().iterator();
@@ -93,7 +93,7 @@ public class PrimMST {
             }
 
             Collections.shuffle(validNextPoints);
-            for (Point p : path) System.out.println("x: " + p.x + " y: " + p.y);
+            for (Point p : path) System.out.println("Path x: " + p.x + " Path y: " + p.y);
             curr = validNextPoints.get(0);
         }
         return path;
@@ -104,7 +104,7 @@ public class PrimMST {
         Preconditions:  - currPoint is a NodeSquare of curr
         - nextPoint is a neighbor of currPoint
          */
-        if (currPoint.x != curr.x && currPoint.y != curr.x) return true;
+        if (!primGrid.getNodeSquares(curr).contains(nextPoint)) return false;
         for (Node adj : curr.getAdj()) {
             if (adj.y > curr.y && currPoint.y == curr.y && nextPoint.x != currPoint.x) {
                 return false;

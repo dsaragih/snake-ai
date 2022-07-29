@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class PrimGridUtils {
     public ArrayList<ArrayList<Node>> Matrix = new ArrayList<>();
-    private GridUtils grid = new GridUtils();
+    private GridUtils grid;
 
-    public PrimGridUtils() {
+    public PrimGridUtils(GridUtils grid) {
         for (int i = Game.SQUARE_SIZE; i < Game.HEIGHT; i += 2 * Game.SQUARE_SIZE) {
             ArrayList<Node> tmp = new ArrayList<>();
             for (int j = Game.SQUARE_SIZE; j < Game.WIDTH; j += 2 * Game.SQUARE_SIZE) {
@@ -18,7 +18,7 @@ public class PrimGridUtils {
             }
             Matrix.add(tmp);
         }
-        System.out.println(Matrix.get(0).get(0));
+        this.grid = grid;
     }
     public int getSize() {
         return Matrix.size() * Matrix.get(0).size();
@@ -35,7 +35,7 @@ public class PrimGridUtils {
         Point t;
         if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
         if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
-        if (checkInBounds(t = new Point(p.x - Game.SIZE, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
+        if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
 
         return tmp;
     }
