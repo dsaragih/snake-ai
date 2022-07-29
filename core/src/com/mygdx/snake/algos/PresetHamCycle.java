@@ -12,11 +12,9 @@ public class PresetHamCycle {
      */
     ArrayList<Point> path;
     Point head;
-    int size;
     public PresetHamCycle(Point head) {
         path = new ArrayList<>();
         this.head = head;
-        this.size = (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE);
 
     }
     private boolean isOnEvenRow() {
@@ -33,13 +31,13 @@ public class PresetHamCycle {
     }
     public ArrayList<Point> findHamCycle() {
         Point dir;
-        while(path.size() < this.size) {
-            if (isOnEvenRow()) dir = new Point(-1, 0);
-            else dir = new Point(1, 0);
+        while(path.size() < Game.SIZE) {
+            if (isOnEvenRow()) dir = new Point(-Game.SQUARE_SIZE, 0);
+            else dir = new Point(Game.SQUARE_SIZE, 0);
 
             if ((isOnLastCol() && !isOnEvenRow()) || (isOnSecondColInterior() && isOnEvenRow()))
-                dir = new Point(0, -1);
-            else if (isOnFirstCol()) dir = new Point(0, 1);
+                dir = new Point(0, -Game.SQUARE_SIZE);
+            else if (isOnFirstCol()) dir = new Point(0, Game.SQUARE_SIZE);
             path.add(dir);
             head = head.add(dir.multiply(Game.SQUARE_SIZE));
         }

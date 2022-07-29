@@ -47,7 +47,7 @@ public class RecursiveHamCycle {
         for (int i = 0; i < path.size() - 1; ++i) {
             Point curr = path.get(i);
             Point next = path.get(i + 1);
-            res.add(new Point((next.x - curr.x) / Game.SQUARE_SIZE, (next.y - curr.y) / Game.SQUARE_SIZE));
+            res.add(new Point(next.x - curr.x, next.y - curr.y));
         }
         return res;
     }

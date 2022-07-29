@@ -6,15 +6,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.snake.algos.AStar;
 import com.mygdx.snake.algos.PresetHamCycle;
+import com.mygdx.snake.algos.PrimHamCycle;
 import com.mygdx.snake.algos.RecursiveHamCycle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Snake {
     public final ArrayList<Square> body = new ArrayList<>();
     public Square head;
     private float dx, dy;
-    private ArrayList<Point> moveSeq;
+    private List<Point> moveSeq;
     private int curr = 0;
 
     public Snake(int x, int y) {
@@ -29,23 +31,29 @@ public class Snake {
         else {
             if (moveSeq == null) {
                 //PresetHamCycle algo = new PresetHamCycle(new Point(head.x, head.y));
-                callAlgo(food);
+                callHamCycle();
             }
         }
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
         }
-        if (curr >= moveSeq.size()) callAlgo(food);
+        if (curr >= moveSeq.size()) callHamCycle();
         Point p = moveSeq.get(curr);
         dx = p.x;
         dy = p.y;
         curr++;
-        float new_x = head.x + dx * Game.SQUARE_SIZE;
-        float new_y = head.y + dy * Game.SQUARE_SIZE;
+        float new_x = head.x + dx;
+        float new_y = head.y + dy;
         head = new Square(new_x, new_y, Color.GREEN);
         body.add(0, head);
     }
-    private void callAlgo(Food food) {
+    private void callHamCycle() {
+        PrimHamCycle algo = new PrimHamCycle(new Point(head.x, head.y));
+        moveSeq = algo.solve();
+        curr = 0;
+    }
+
+    private void callAStar(Food food) {
         AStar algo = new AStar(this, food.x, food.y);
         moveSeq = algo.solve();
         curr = 0;
@@ -53,7 +61,7 @@ public class Snake {
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
             if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
-            callAlgo(food);
+            callAStar(food);
             return true;
         }
         return false;
@@ -75,6 +83,8 @@ public class Snake {
         else if ((Gdx.input.isKeyPressed(Input.Keys.D) && dx != -1)) { dy = 0; dx = 1;}
         else if ((Gdx.input.isKeyPressed(Input.Keys.W)) && dy != -1) { dx = 0; dy = 1;}
         else if ((Gdx.input.isKeyPressed(Input.Keys.S)) && dy != 1) { dx = 0; dy = -1;}
+        dx *= Game.SQUARE_SIZE;
+        dy *= Game.SQUARE_SIZE;
     }
     public void draw(ShapeRenderer shapeRenderer) {
         for (Square square: body) {

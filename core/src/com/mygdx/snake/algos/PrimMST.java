@@ -6,35 +6,40 @@ import java.util.*;
 
 public class PrimMST {
     Point start;
-    PrimGridUtils grid;
+    PrimGridUtils primGrid;
     List<Node> mstSet;
+    GridUtils grid;
     HashMap<Node, Double> vertices;
 
     // For simplicity, we assume that Game.HEIGHT, Game.WIDTH / SQUARE_SIZE are even.
 
-    public PrimMST() {
-        this.start = new Point(Game.SQUARE_SIZE, Game.SQUARE_SIZE);
-        grid = new PrimGridUtils();
-        for (ArrayList<Node> row : grid.primGrid) {
+    public PrimMST(Point head) {
+        this.vertices = new HashMap<>();
+        primGrid = new PrimGridUtils();
+        grid = new GridUtils();
+        this.mstSet = new ArrayList<>();
+        start = grid.getPoint(head.x, head.y);
+        for (ArrayList<Node> row : primGrid.Matrix) {
             for (Node p : row) {
                 vertices.put(p, Double.POSITIVE_INFINITY);
             }
         }
         // Sets the value of the first Node to be 0.
-        vertices.put(grid.primGrid.get(0).get(0), 0.0);
+        System.out.println(primGrid.Matrix.get(0).get(0));
+        vertices.put(primGrid.Matrix.get(0).get(0), 0.0);
     }
 
     private void solve() {
-        while (mstSet.size() < Game.SIZE) {
+        while (mstSet.size() < primGrid.getSize()) {
             // Retrieves the vertex with minimum value.
             // Need to keep track of latest neighbor to connect the tree.
-            Node minNode = Collections.min(vertices.entrySet(), Map.Entry.comparingByValue()).getKey();
+            Node minNode = min();
             vertices.remove(minNode);
             mstSet.add(minNode);
             if (minNode.prev != null) minNode.prev.addNext(minNode);
 
             // Add a bit of randomness between spanning trees.
-            ArrayList<Node> neighbors = grid.getNeighbors(minNode);
+            ArrayList<Node> neighbors = primGrid.getNeighbors(minNode);
             Collections.shuffle(neighbors);
             for (Node neighbor : neighbors) {
                 neighbor.setPrev(minNode);
@@ -46,9 +51,25 @@ public class PrimMST {
                 if (vertices.containsKey(neighbor)) vertices.put(neighbor, 1.0);
             }
         }
+        for (Point p : mstSet) System.out.println("x: " + p.x + " y: " + p.y);
+    }
+    private Node min() {
+        Iterator<Map.Entry<Node, Double>> entries = vertices.entrySet().iterator();
+        if (!entries.hasNext()) {
+            return null;
+        }
+        Map.Entry<Node, Double> min;
+        for (min = entries.next(); entries.hasNext();) {
+            Map.Entry<Node, Double> value = entries.next();
+            if (value.getValue() < min.getValue()) {
+                min = value;
+            }
+        }
+        return min.getKey();
     }
 
     public List<Point> getHamCycle() {
+        ArrayList<Point> path = new ArrayList<>();
         /*
         2. Find the squares these nodes correspond to: [[-1, -1], [0, -1], [-1, 0], [0, 0]]
         3. Let c be the current square we are on. Then, add c to the path, and obtain the
@@ -58,7 +79,53 @@ public class PrimMST {
             - Else, choose neighbor such that the line c -> neighbor does not intersect any node lines.
         5. Repeat 3 and 4 until size of path is size of grid.
          */
-        return new ArrayList<>();
+        solve();
+        Point curr = start;
+        while (path.size() < Game.SIZE) {
+            path.add(curr);
+            Node currNode = primGrid.getCorrNode(curr);
+            ArrayList<Point> validNextPoints = new ArrayList<>();
 
+            for (Point neighbor : grid.getNeighbors(curr)) {
+                if (path.contains(neighbor)) continue;
+                if (isPointOfAdjNode(currNode, neighbor) ||
+                        doesNotBisectAdjNodes(curr, neighbor, currNode)) validNextPoints.add(neighbor);
+            }
+
+            Collections.shuffle(validNextPoints);
+            for (Point p : path) System.out.println("x: " + p.x + " y: " + p.y);
+            curr = validNextPoints.get(0);
+        }
+        return path;
+
+    }
+    private boolean doesNotBisectAdjNodes(Point currPoint, Point nextPoint, Node curr) {
+        /*
+        Preconditions:  - currPoint is a NodeSquare of curr
+        - nextPoint is a neighbor of currPoint
+         */
+        if (currPoint.x != curr.x && currPoint.y != curr.x) return true;
+        for (Node adj : curr.getAdj()) {
+            if (adj.y > curr.y && currPoint.y == curr.y && nextPoint.x != currPoint.x) {
+                return false;
+            }
+            if (adj.x > curr.x && currPoint.x == curr.x && nextPoint.y != currPoint.y) {
+                return false;
+            }
+            if (adj.y < curr.y && currPoint.y < curr.y && nextPoint.x != currPoint.x) {
+                return false;
+            }
+            if (adj.x < curr.x && currPoint.x < curr.x && nextPoint.y != currPoint.y) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isPointOfAdjNode(Node curr, Point neighbor) {
+        for (Node adj : curr.getAdj()) {
+            if (primGrid.getNodeSquares(adj).contains(neighbor)) return true;
+        }
+        return false;
     }
 }

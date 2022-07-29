@@ -10,7 +10,7 @@ public class Square extends Rectangle {
         this(x, y, Color.WHITE);
     }
     public Square(float x, float y, Color color) {
-        super(x, y, Game.SQUARE_SIZE, Game.SQUARE_SIZE);
+        super(x, y, Game.SQUARE_SIZE - 1, Game.SQUARE_SIZE - 1);
         this.color = color;
     }
     public void draw(ShapeRenderer shapeRenderer) {

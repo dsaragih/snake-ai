@@ -69,7 +69,7 @@ public class AStar {
         ArrayList<Point> res = new ArrayList<>();
         while(cameFrom.containsKey(curr)) {
             Point prev = cameFrom.get(curr);
-            res.add(0, new Point((curr.x - prev.x) / Game.SQUARE_SIZE, (curr.y - prev.y) / Game.SQUARE_SIZE));
+            res.add(0, new Point(curr.x - prev.x, curr.y - prev.y));
             curr = prev;
         }
         return res;

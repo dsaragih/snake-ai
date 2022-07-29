@@ -7,7 +7,7 @@ import com.mygdx.snake.Square;
 import java.util.ArrayList;
 
 public class PrimGridUtils {
-    public ArrayList<ArrayList<Node>> primGrid = new ArrayList<>();
+    public ArrayList<ArrayList<Node>> Matrix = new ArrayList<>();
     private GridUtils grid = new GridUtils();
 
     public PrimGridUtils() {
@@ -16,27 +16,33 @@ public class PrimGridUtils {
             for (int j = Game.SQUARE_SIZE; j < Game.WIDTH; j += 2 * Game.SQUARE_SIZE) {
                 tmp.add(new Node(j, i));
             }
-            primGrid.add(tmp);
+            Matrix.add(tmp);
         }
+        System.out.println(Matrix.get(0).get(0));
+    }
+    public int getSize() {
+        return Matrix.size() * Matrix.get(0).size();
     }
     public Node getCorrNode(Point p) {
         return getNode(new Node(p.x + Game.SQUARE_SIZE, p.y + Game.SQUARE_SIZE));
     }
 
+    public Point getPoint(Point p) { return grid.getPoint(p);}
+
     public ArrayList<Point> getNodeSquares(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();
         tmp.add(p);
         Point t;
-        if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(grid.getPoint(t));
-        if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(grid.getPoint(t));
-        if (checkInBounds(t = new Point(p.x - Game.SIZE, p.y - Game.SQUARE_SIZE))) tmp.add(grid.getPoint(t));
+        if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
+        if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
+        if (checkInBounds(t = new Point(p.x - Game.SIZE, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
 
         return tmp;
     }
     private Node getNode(Node n) {
         int g_y = (int) ((n.y - Game.SQUARE_SIZE) / (2 * Game.SQUARE_SIZE));
         int g_x = (int) ((n.x - Game.SQUARE_SIZE) / (2 * Game.SQUARE_SIZE));
-        return primGrid.get(g_y).get(g_x);
+        return Matrix.get(g_y).get(g_x);
     }
     public ArrayList<Node> getNeighbors(Point p) {
         ArrayList<Node> tmp = new ArrayList<>();

@@ -20,7 +20,7 @@ public class Node extends Point {
 
     public ArrayList<Node> getAdj() {
         ArrayList<Node> tmp = new ArrayList<>(next);
-        tmp.add(0, prev);
+        if (prev != null) tmp.add(0, prev);
         return tmp;
     }
 }
