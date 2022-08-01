@@ -51,7 +51,6 @@ public class PrimMST {
                 if (vertices.containsKey(neighbor)) vertices.put(neighbor, 1.0);
             }
         }
-        for (Node p : mstSet) if (p.prev != null) System.out.println("x: " + p.x + " y: " + p.y + " Prev x: " + p.prev.x + " Prev y: " + p.prev.y);
     }
     private Node min() {
         Iterator<Map.Entry<Node, Double>> entries = vertices.entrySet().iterator();
@@ -81,8 +80,8 @@ public class PrimMST {
          */
         solve();
         Point curr = start;
+        path.add(start);
         while (path.size() < Game.SIZE) {
-            path.add(curr);
             Node currNode = primGrid.getCorrNode(curr);
             ArrayList<Point> validNextPoints = new ArrayList<>();
 
@@ -93,9 +92,12 @@ public class PrimMST {
             }
 
             Collections.shuffle(validNextPoints);
-            for (Point p : path) System.out.println("Path x: " + p.x + " Path y: " + p.y);
             curr = validNextPoints.get(0);
+            path.add(curr);
         }
+        for (Point p : path) System.out.println("Path x: " + p.x + " Path y: " + p.y + " SIZE: " + path.size());
+        System.out.println("WOOOWHO");
+        path.add(start);
         return path;
 
     }

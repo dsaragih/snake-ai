@@ -37,8 +37,9 @@ public class Snake {
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
         }
-        if (curr >= moveSeq.size()) callHamCycle();
+        if (curr >= moveSeq.size()) curr = 0;
         Point p = moveSeq.get(curr);
+        //System.out.println("Headx: " + head.x + " Head y: " + head.y);
         dx = p.x;
         dy = p.y;
         curr++;
@@ -61,7 +62,7 @@ public class Snake {
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
             if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
-            callAStar(food);
+            //callAStar(food);
             return true;
         }
         return false;

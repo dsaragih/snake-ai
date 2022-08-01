@@ -31,7 +31,7 @@ public class PrimGridUtils {
 
     public ArrayList<Point> getNodeSquares(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();
-        tmp.add(p);
+        tmp.add(getPoint(p));
         Point t;
         if (checkInBounds(t = new Point(p.x - Game.SQUARE_SIZE, p.y))) tmp.add(getPoint(t));
         if (checkInBounds(t = new Point(p.x, p.y - Game.SQUARE_SIZE))) tmp.add(getPoint(t));
