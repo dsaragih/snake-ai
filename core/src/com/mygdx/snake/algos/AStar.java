@@ -1,15 +1,12 @@
 package com.mygdx.snake.algos;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import com.badlogic.gdx.graphics.Color;
-import com.mygdx.snake.Game;
+import com.mygdx.snake.*;
 
 import javafx.util.Pair;
-
-import com.mygdx.snake.Point;
-import com.mygdx.snake.Snake;
-import com.mygdx.snake.Square;
 
 public class AStar {
     HashMap<Point, Double> gScore;
@@ -17,16 +14,16 @@ public class AStar {
     HashMap<Point, Point> cameFrom;
     PriorityQueue<Point> q;
     GridUtils grid;
-    ArrayList<Square> body;
+    List<Point> body;
     Point start;
     private double INF = Double.POSITIVE_INFINITY;
     Point end;
 
-    public AStar(Snake snake, float food_x, float food_y) {
-        grid = new GridUtils(snake.body);
-        this.body = snake.body;
-        start = grid.getPoint(snake.head.x, snake.head.y);
-        end = grid.getPoint(food_x, food_y);
+    public AStar(List<Point> body, Food food) {
+        grid = new GridUtils(body);
+        this.body = body;
+        start = grid.getPoint(body.get(0));
+        end = grid.getPoint(food.x, food.y);
         gScore = new HashMap<>();
         fScore = new HashMap<>();
         cameFrom = new HashMap<>();
@@ -46,14 +43,14 @@ public class AStar {
     private double h(Point p) {
         return Math.sqrt(Math.pow(p.x - end.x, 2) + Math.pow(p.y - end.y, 2));
     }
-    private int moveSnake(ArrayList<Point> seq, ArrayList<Square> body) {
-        Square head = body.get(0);
+    private int moveSnake(List<Point> seq, List<Point> body) {
+        Point head = body.get(0);
         for (Point dir : seq) {
             head = body.get(0);
             body.remove(body.size() - 1);
-            float new_x = head.x + dir.x * Game.SQUARE_SIZE;
-            float new_y = head.y + dir.y * Game.SQUARE_SIZE;
-            head = new Square(new_x, new_y, Color.GREEN);
+            float new_x = head.x + dir.x;
+            float new_y = head.y + dir.y;
+            head = new Point(new_x, new_y);
             body.add(0, head);
             grid.update(body);
         }
@@ -62,6 +59,50 @@ public class AStar {
         isPathTrapped(new Point(head.x, head.y), visited, stack);
 
         return visited.size();
+    }
+    public ArrayList<Point> hamSolve(List<Point> cycle) {
+        /*
+        Given the position of the food, find shortcuts through the Hamiltonian cycle to
+        reach the food as efficiently as possible.
+         */
+        while (!q.isEmpty()) {
+            Point current = q.poll();
+            ArrayList<Point> seq = getMoveSequence(current);
+            int score = moveSnake(seq, new ArrayList<>(body));
+
+            if (current.equals(end)) {
+                return seq;
+            }
+            for (Point neighbor : grid.getNeighbors(current)) {
+                if (!respectsOrder(current, neighbor, cycle)) continue;
+                calculate(current, neighbor);
+            }
+        }
+        return new ArrayList<>(Arrays.asList(new Point(0, 0)));
+    }
+    private int whereInCycle(Point p, List<Point> cycle) {
+        int idx = 0;
+        for (int i = 0; i < cycle.size(); i++) {
+            if (cycle.get(i).equals(p)) idx = i;
+        }
+        return idx;
+    }
+
+    private boolean respectsOrder(Point curr, Point next, List<Point> cycle) {
+        /*
+        Order: tail - head - tail
+        Precondition: Order respected
+         */
+        Point tail = grid.body.get(grid.body.size() - 1);
+        int tailIdx = whereInCycle(tail, cycle);
+        int headIdx = whereInCycle(curr, cycle);
+        int nextIdx = whereInCycle(next, cycle);
+
+        if (headIdx >= tailIdx) {
+            return nextIdx > headIdx || nextIdx < tailIdx - 1;
+        } else {
+            return nextIdx > headIdx && nextIdx < tailIdx - 1;
+        }
     }
 
     private ArrayList<Point> getMoveSequence(Point curr) {
@@ -74,16 +115,27 @@ public class AStar {
         }
         return res;
     }
-    public ArrayList<Point> solve() {
-        return short_solve();
+    private void calculate(Point current, Point neighbor) {
+        double tmpGScore = gScore.getOrDefault(current, INF) + 1;
+        //System.out.println("Neighs: " + neighbor.x + " " + neighbor.y );
+        if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
+            cameFrom.put(neighbor, current);
+            gScore.put(neighbor, tmpGScore);
+            //System.out.println(tmpGScore + h(neighbor));
+            fScore.put(neighbor, tmpGScore + h(neighbor));
+            if (!q.contains(neighbor)) {
+                q.add(neighbor);
+
+            }
+        }
+
     }
 
     private void isPathTrapped(Point curr, ArrayList<Point> visited, Stack<Point> stack) {
         visited.add(curr);
         stack.add(curr);
-        int size = (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE);
 
-        if (visited.size() > (size - grid.body.size()) / 2) return;
+        if (visited.size() > (Game.SIZE - grid.body.size()) / 2) return;
         for (Point neighbor : grid.getNotLostNeighbors(curr)) {
             if (visited.contains(neighbor)) continue;
             visited.add(neighbor);
@@ -93,39 +145,22 @@ public class AStar {
         if (!stack.isEmpty()) stack.remove(curr);
     }
 
-    private ArrayList<Point> short_solve() {
-        Pair<ArrayList<Point>, Integer> pair = new Pair<>(new ArrayList<Point>(), 0);
+    public ArrayList<Point> solve() {
         Point current;
         while (!q.isEmpty()) {
             current = q.poll();
             ArrayList<Point> seq = getMoveSequence(current);
 
             int score = moveSnake(seq, new ArrayList<>(body));
-            int size = (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE);
 
-            if (current.equals(end) && score > (size - grid.body.size()) / 2) {
-                System.out.println("Score: " + score);
+            if (current.equals(end) && score > (Game.SIZE - grid.body.size() / 2)) {
                 return seq;
-            } else if (current.equals(end)) {
-                if (pair.getValue() < score) pair = new Pair<>(seq, score);
             }
-
             for (Point neighbor : grid.getNotLostNeighbors(current)) {
-                double tmpGScore = gScore.getOrDefault(current, INF) + 1;
-                //System.out.println("Neighs: " + neighbor.x + " " + neighbor.y );
-                if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
-                    cameFrom.put(neighbor, current);
-                    gScore.put(neighbor, tmpGScore);
-                    //System.out.println(tmpGScore + h(neighbor));
-                    fScore.put(neighbor, tmpGScore + h(neighbor));
-                    if (!q.contains(neighbor)) {
-                        q.add(neighbor);
-
-                    }
-                }
+                calculate(current, neighbor);
             }
+
         }
-        System.out.println("Stops??");
-        return pair.getKey().size() == 0 ? new ArrayList<>(Arrays.asList(new Point(0, 0))) : pair.getKey();
+        return new ArrayList<>(Arrays.asList(new Point(0, 0)));
     }
 }

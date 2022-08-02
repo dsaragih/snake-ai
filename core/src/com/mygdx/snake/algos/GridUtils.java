@@ -5,12 +5,13 @@ import com.mygdx.snake.Point;
 import com.mygdx.snake.Square;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GridUtils {
     public ArrayList<ArrayList<Point>> Matrix = new ArrayList<>();
-    public ArrayList<Square> body;
+    public List<Point> body;
 
-    public GridUtils(ArrayList<Square> body) {
+    public GridUtils(List<Point> body) {
         this.body = body;
         for (int i = 0; i < Game.HEIGHT; i += Game.SQUARE_SIZE) {
             ArrayList<Point> tmp = new ArrayList<>();
@@ -21,7 +22,7 @@ public class GridUtils {
         }
     }
     public GridUtils() {
-        this(new ArrayList<Square>());
+        this(new ArrayList<Point>());
     }
     public Point getPoint(float x, float y) {
         int g_y = (int) (y / Game.SQUARE_SIZE);
@@ -32,7 +33,7 @@ public class GridUtils {
         return getPoint(p.x, p.y);
     }
 
-    public void update(ArrayList<Square> body) {
+    public void update(List<Point> body) {
         this.body = body;
     }
     public ArrayList<Point> getNeighbors(Point p) {
@@ -60,7 +61,7 @@ public class GridUtils {
         return tmp;
     }
     private boolean checkDoesntLose(Point p) {
-        for (Square s : body) {
+        for (Point s : body) {
             if (s.x == p.x && s.y == p.y) return false;
         }
         return checkInBounds(p);

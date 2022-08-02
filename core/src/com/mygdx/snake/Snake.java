@@ -3,11 +3,10 @@ package com.mygdx.snake;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.snake.algos.AStar;
-import com.mygdx.snake.algos.PresetHamCycle;
-import com.mygdx.snake.algos.PrimHamCycle;
-import com.mygdx.snake.algos.RecursiveHamCycle;
+import com.mygdx.snake.algos.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ public class Snake {
     private float dx, dy;
     private List<Point> moveSeq;
     private int curr = 0;
+    private PrimHamCycle primHamCycle;
 
     public Snake(int x, int y) {
         // Initialize the head of the snake
@@ -25,21 +25,35 @@ public class Snake {
         body.add(head);
         dx = 1; // moves to the right
     }
-    public void update(Food food, boolean PlayerControl) {
-
+    public List<Point> getBodyPoint() {
+        List<Point> res = new ArrayList<Point>() {
+        };
+        for (Square s : body) {
+            res.add(new Point(s.x, s.y));
+        }
+        return res;
+    }
+    public void update(Food food, boolean PlayerControl, SpriteBatch batch) {
         if (PlayerControl) dirCalc();
         else {
-            if (moveSeq == null) {
-                //PresetHamCycle algo = new PresetHamCycle(new Point(head.x, head.y));
-                callHamCycle();
+            if (primHamCycle == null) {
+                primHamCycle = new PrimHamCycle(new Point(head.x, head.y));
+                callHamCycle(food);
             }
         }
+//        batch.begin();
+//        BitmapFont font = new BitmapFont();
+//        for (int i = 0; i < primHamCycle.cycle.size(); i++) {
+//            Point curr = primHamCycle.cycle.get(i);
+//            font.draw(batch, Integer.toString(i), 400, 400, Game.SQUARE_SIZE, 0, false);
+//        }
+//        batch.end();
+
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
         }
         if (curr >= moveSeq.size()) curr = 0;
         Point p = moveSeq.get(curr);
-        //System.out.println("Headx: " + head.x + " Head y: " + head.y);
         dx = p.x;
         dy = p.y;
         curr++;
@@ -47,31 +61,39 @@ public class Snake {
         float new_y = head.y + dy;
         head = new Square(new_x, new_y, Color.GREEN);
         body.add(0, head);
+        System.out.println("Headx: " + head.x + " Head y: " + head.y);
+        System.out.println("Tail x: " + body.get(body.size() - 1).x + " Tail y: " + body.get(body.size() - 1).y);
     }
-    private void callHamCycle() {
-        PrimHamCycle algo = new PrimHamCycle(new Point(head.x, head.y));
-        moveSeq = algo.solve();
+    private void callHamCycle(Food food) {
+        moveSeq = primHamCycle.solve(getBodyPoint(), food);
         curr = 0;
     }
 
     private void callAStar(Food food) {
-        AStar algo = new AStar(this, food.x, food.y);
+        AStar algo = new AStar(getBodyPoint(), food);
         moveSeq = algo.solve();
         curr = 0;
     }
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
             if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
-            //callAStar(food);
+            callHamCycle(food);
             return true;
         }
         return false;
     }
     public int checkGameEnd() {
-        if (head.x == Game.WIDTH || head.x < 0 || head.y == Game.HEIGHT || head.y < 0) return 1;
-        //System.out.println("Body size: " + body.size());
+
+        if (head.x == Game.WIDTH || head.x < 0 || head.y == Game.HEIGHT || head.y < 0) {
+            System.out.println("BOUND");
+            return 1;
+        }
         for (Square s : body.subList(1, body.size())) {
-            if (head.overlaps(s)) return 1;
+            if (head.overlaps(s)) {
+
+                System.out.println("EAT " + s.x + " " + s.y);
+                return 1;
+            }
         }
         if (body.size() == (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) {
             return 2;
@@ -88,7 +110,8 @@ public class Snake {
         dy *= Game.SQUARE_SIZE;
     }
     public void draw(ShapeRenderer shapeRenderer) {
-        for (Square square: body) {
+        body.get(0).draw(shapeRenderer);
+        for (Square square: body.subList(1, body.size())) {
             square.draw(shapeRenderer);
         }
     }

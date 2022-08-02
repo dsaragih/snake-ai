@@ -38,10 +38,12 @@ public class Game extends ApplicationAdapter {
 
 	public void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) PlayerControl = !PlayerControl;
-		snake.update(food, PlayerControl);
+		snake.update(food, PlayerControl, batch);
 		gameEnd = snake.checkGameEnd();
 		stagger();
 	}
+	// Temporary
+
 	private void drawStart() {
 		batch.begin();
 		BitmapFont font = new BitmapFont();

@@ -95,8 +95,7 @@ public class PrimMST {
             curr = validNextPoints.get(0);
             path.add(curr);
         }
-        for (Point p : path) System.out.println("Path x: " + p.x + " Path y: " + p.y + " SIZE: " + path.size());
-        System.out.println("WOOOWHO");
+
         path.add(start);
         return path;
 
