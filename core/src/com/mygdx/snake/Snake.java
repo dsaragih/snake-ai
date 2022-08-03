@@ -23,7 +23,7 @@ public class Snake {
         // Initialize the head of the snake
         head = new Square(x, y, Color.GREEN);
         body.add(head);
-        dx = 1; // moves to the right
+        dx = Game.SQUARE_SIZE; // moves to the right
     }
     public List<Point> getBodyPoint() {
         List<Point> res = new ArrayList<Point>() {
@@ -33,18 +33,16 @@ public class Snake {
         }
         return res;
     }
-    public void update(Food food, boolean PlayerControl) {
-        if (PlayerControl) dirCalc();
-        else {
-            if (primHamCycle == null) {
-                primHamCycle = new PrimHamCycle(new Point(head.x, head.y));
-                callHamCycle(food);
-            }
+    public void update(Food food) {
+        if (primHamCycle == null) {
+            primHamCycle = new PrimHamCycle(new Point(head.x, head.y));
+            callHamCycle(food);
         }
 
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
         }
+
         if (curr >= moveSeq.size()) curr = 0;
         Point p = moveSeq.get(curr);
         dx = p.x;
@@ -54,6 +52,18 @@ public class Snake {
         float new_x = head.x + dx;
         float new_y = head.y + dy;
         head = new Square(new_x, new_y, Color.GREEN);
+        body.add(0, head);
+    }
+    public void updatePlayer(Food food) {
+        dirCalc();
+        if (!checkCollideWithFood(food)) {
+            body.remove(body.size() - 1);
+        }
+
+        float new_x = head.x + dx;
+        float new_y = head.y + dy;
+        head = new Square(new_x, new_y, Color.GREEN);
+
         body.add(0, head);
     }
     private void callHamCycle(Food food) {
@@ -94,12 +104,10 @@ public class Snake {
     }
 
     private void dirCalc() {
-        if ((Gdx.input.isKeyPressed(Input.Keys.A) && dx != 1)) { dy = 0; dx = -1; }
-        else if ((Gdx.input.isKeyPressed(Input.Keys.D) && dx != -1)) { dy = 0; dx = 1;}
-        else if ((Gdx.input.isKeyPressed(Input.Keys.W)) && dy != -1) { dx = 0; dy = 1;}
-        else if ((Gdx.input.isKeyPressed(Input.Keys.S)) && dy != 1) { dx = 0; dy = -1;}
-        dx *= Game.SQUARE_SIZE;
-        dy *= Game.SQUARE_SIZE;
+        if ((Gdx.input.isKeyPressed(Input.Keys.A) && dx < 1)) { dy = 0; dx = -Game.SQUARE_SIZE; }
+        else if ((Gdx.input.isKeyPressed(Input.Keys.D) && dx > -1)) { dy = 0; dx = Game.SQUARE_SIZE;}
+        else if ((Gdx.input.isKeyPressed(Input.Keys.W)) && dy > -1) { dx = 0; dy = Game.SQUARE_SIZE;}
+        else if ((Gdx.input.isKeyPressed(Input.Keys.S)) && dy < 1) { dx = 0; dy = -Game.SQUARE_SIZE;}
     }
     public void draw(ShapeRenderer shapeRenderer) {
         body.get(0).draw(shapeRenderer);

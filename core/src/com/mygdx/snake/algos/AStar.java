@@ -38,7 +38,7 @@ public class AStar {
         q.add(start);
     }
     private double h(Point p) {
-        return Math.sqrt(Math.pow(p.x - end.x, 2) + Math.pow(p.y - end.y, 2));
+        return -Math.sqrt(Math.pow(p.x - end.x, 2) - Math.pow(p.y - end.y, 2));
     }
 
     private int moveSnake(List<Point> seq, List<Point> body) {
@@ -70,10 +70,10 @@ public class AStar {
         return res;
     }
     private void calculate(Point current, Point neighbor) {
-        double tmpGScore = gScore.getOrDefault(current, INF) + 1;
+        double tmpGScore = gScore.getOrDefault(current, INF) - 1;
         //System.out.println("Neighs: " + neighbor.x + " " + neighbor.y );
         if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
-            cameFrom.put(neighbor, current);
+            cameFrom.putIfAbsent(neighbor, current);
             gScore.put(neighbor, tmpGScore);
             //System.out.println(tmpGScore + h(neighbor));
             fScore.put(neighbor, tmpGScore + h(neighbor));

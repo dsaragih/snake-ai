@@ -25,7 +25,6 @@ public class PrimMST {
             }
         }
         // Sets the value of the first Node to be 0.
-        System.out.println(primGrid.Matrix.get(0).get(0));
         vertices.put(primGrid.Matrix.get(0).get(0), 0.0);
     }
 

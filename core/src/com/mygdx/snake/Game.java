@@ -37,17 +37,26 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void update() {
+		int delay;
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) PlayerControl = !PlayerControl;
-		snake.update(food, PlayerControl);
+
+		if (PlayerControl) {
+			snake.updatePlayer(food);
+			delay = 100;
+		}
+		else {
+			snake.update(food);
+			delay = 8;
+		}
+
 		gameEnd = snake.checkGameEnd();
-		stagger();
+		stagger(delay);
 	}
-	// Temporary
 
 	private void drawStart() {
 		batch.begin();
 		BitmapFont font = new BitmapFont();
-		font.draw(batch, "Press M to auto-play", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
+		font.draw(batch, "Press M to control snake", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
 		batch.end();
 	}
 	private void drawEnd() {
@@ -62,9 +71,9 @@ public class Game extends ApplicationAdapter {
 		font.draw(batch, "Winner! Press SPACE to restart!!", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
 		batch.end();
 	}
-	private void stagger() {
+	private void stagger(int delay) {
 		try {
-			sleep(10);
+			sleep(delay);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +89,7 @@ public class Game extends ApplicationAdapter {
 			drawEnd();
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 				gameEnd = 0;
+				PlayerControl = false;
 				create();
 			}
 		} else {
@@ -87,6 +97,7 @@ public class Game extends ApplicationAdapter {
 			food.updateWin();
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 				gameEnd = 0;
+				PlayerControl = false;
 				create();
 			}
 		}
