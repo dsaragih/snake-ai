@@ -33,7 +33,7 @@ public class Snake {
         }
         return res;
     }
-    public void update(Food food, boolean PlayerControl, SpriteBatch batch) {
+    public void update(Food food, boolean PlayerControl) {
         if (PlayerControl) dirCalc();
         else {
             if (primHamCycle == null) {
@@ -41,13 +41,6 @@ public class Snake {
                 callHamCycle(food);
             }
         }
-//        batch.begin();
-//        BitmapFont font = new BitmapFont();
-//        for (int i = 0; i < primHamCycle.cycle.size(); i++) {
-//            Point curr = primHamCycle.cycle.get(i);
-//            font.draw(batch, Integer.toString(i), 400, 400, Game.SQUARE_SIZE, 0, false);
-//        }
-//        batch.end();
 
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
@@ -57,12 +50,11 @@ public class Snake {
         dx = p.x;
         dy = p.y;
         curr++;
+
         float new_x = head.x + dx;
         float new_y = head.y + dy;
         head = new Square(new_x, new_y, Color.GREEN);
         body.add(0, head);
-        System.out.println("Headx: " + head.x + " Head y: " + head.y);
-        System.out.println("Tail x: " + body.get(body.size() - 1).x + " Tail y: " + body.get(body.size() - 1).y);
     }
     private void callHamCycle(Food food) {
         moveSeq = primHamCycle.solve(getBodyPoint(), food);
@@ -85,13 +77,13 @@ public class Snake {
     public int checkGameEnd() {
 
         if (head.x == Game.WIDTH || head.x < 0 || head.y == Game.HEIGHT || head.y < 0) {
-            System.out.println("BOUND");
             return 1;
         }
         for (Square s : body.subList(1, body.size())) {
             if (head.overlaps(s)) {
-
-                System.out.println("EAT " + s.x + " " + s.y);
+//                System.out.println("Headx: " + head.x + " Head y: " + head.y);
+//                System.out.println("Tail x: " + body.get(body.size() - 1).x + " Tail y: " + body.get(body.size() - 1).y);
+//                System.out.println("EAT " + s.x + " " + s.y);
                 return 1;
             }
         }

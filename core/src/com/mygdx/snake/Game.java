@@ -38,7 +38,7 @@ public class Game extends ApplicationAdapter {
 
 	public void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) PlayerControl = !PlayerControl;
-		snake.update(food, PlayerControl, batch);
+		snake.update(food, PlayerControl);
 		gameEnd = snake.checkGameEnd();
 		stagger();
 	}

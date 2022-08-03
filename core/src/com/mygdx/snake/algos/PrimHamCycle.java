@@ -19,8 +19,24 @@ public class PrimHamCycle {
             return getMoveSequence(body.get(0), cycle);
         } else {
             // Finds shortcut
-            AStar algo = new AStar(body, food);
-            return algo.hamSolve(cycle);
+            CycleShortcut algo = new CycleShortcut(body, food, cycle);
+
+//            boolean order = true;
+//            int headIdx = algo.whereInCycle(body.get(0));
+//            int tailIdx = algo.whereInCycle(body.get(body.size() - 1));
+//            for (Point p : body) {
+//                if (headIdx >= tailIdx) {
+//                    if (algo.whereInCycle(p) > headIdx) order = false;
+//                } else {
+//                    if (algo.whereInCycle(p) > headIdx && algo.whereInCycle(p) < tailIdx) order = false;
+//                }
+//            }
+//            System.out.println("Headx: " + body.get(0).x + " Head y: " + body.get(0).y);
+//            System.out.println("Tail x: " + body.get(body.size() - 1).x + " Tail y: " + body.get(body.size() - 1).y);
+//            System.out.println("Head idx: " +  headIdx + " tail idx: " + tailIdx + " order: " + order);
+                    
+            List<Point> moveSeq = algo.hamSolve();
+            return moveSeq.get(0).equals(new Point(0, 0)) ? getMoveSequence(body.get(0), cycle) : moveSeq;
         }
     }
 
@@ -40,7 +56,6 @@ public class PrimHamCycle {
             res.add(new Point(next.x - curr.x, next.y - curr.y));
             idx = (idx + 1) % (cycle.size() - 1);
         }
-
         return res;
     }
 

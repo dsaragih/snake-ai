@@ -1,12 +1,9 @@
 package com.mygdx.snake.algos;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
-import com.badlogic.gdx.graphics.Color;
 import com.mygdx.snake.*;
 
-import javafx.util.Pair;
 
 public class AStar {
     HashMap<Point, Double> gScore;
@@ -16,7 +13,7 @@ public class AStar {
     GridUtils grid;
     List<Point> body;
     Point start;
-    private double INF = Double.POSITIVE_INFINITY;
+    private final double INF = Double.POSITIVE_INFINITY;
     Point end;
 
     public AStar(List<Point> body, Food food) {
@@ -43,6 +40,7 @@ public class AStar {
     private double h(Point p) {
         return Math.sqrt(Math.pow(p.x - end.x, 2) + Math.pow(p.y - end.y, 2));
     }
+
     private int moveSnake(List<Point> seq, List<Point> body) {
         Point head = body.get(0);
         for (Point dir : seq) {
@@ -59,50 +57,6 @@ public class AStar {
         isPathTrapped(new Point(head.x, head.y), visited, stack);
 
         return visited.size();
-    }
-    public ArrayList<Point> hamSolve(List<Point> cycle) {
-        /*
-        Given the position of the food, find shortcuts through the Hamiltonian cycle to
-        reach the food as efficiently as possible.
-         */
-        while (!q.isEmpty()) {
-            Point current = q.poll();
-            ArrayList<Point> seq = getMoveSequence(current);
-            int score = moveSnake(seq, new ArrayList<>(body));
-
-            if (current.equals(end)) {
-                return seq;
-            }
-            for (Point neighbor : grid.getNeighbors(current)) {
-                if (!respectsOrder(current, neighbor, cycle)) continue;
-                calculate(current, neighbor);
-            }
-        }
-        return new ArrayList<>(Arrays.asList(new Point(0, 0)));
-    }
-    private int whereInCycle(Point p, List<Point> cycle) {
-        int idx = 0;
-        for (int i = 0; i < cycle.size(); i++) {
-            if (cycle.get(i).equals(p)) idx = i;
-        }
-        return idx;
-    }
-
-    private boolean respectsOrder(Point curr, Point next, List<Point> cycle) {
-        /*
-        Order: tail - head - tail
-        Precondition: Order respected
-         */
-        Point tail = grid.body.get(grid.body.size() - 1);
-        int tailIdx = whereInCycle(tail, cycle);
-        int headIdx = whereInCycle(curr, cycle);
-        int nextIdx = whereInCycle(next, cycle);
-
-        if (headIdx >= tailIdx) {
-            return nextIdx > headIdx || nextIdx < tailIdx - 1;
-        } else {
-            return nextIdx > headIdx && nextIdx < tailIdx - 1;
-        }
     }
 
     private ArrayList<Point> getMoveSequence(Point curr) {
@@ -128,7 +82,6 @@ public class AStar {
 
             }
         }
-
     }
 
     private void isPathTrapped(Point curr, ArrayList<Point> visited, Stack<Point> stack) {
