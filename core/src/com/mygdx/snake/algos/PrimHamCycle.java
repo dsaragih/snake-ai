@@ -34,7 +34,7 @@ public class PrimHamCycle {
 //            System.out.println("Headx: " + body.get(0).x + " Head y: " + body.get(0).y);
 //            System.out.println("Tail x: " + body.get(body.size() - 1).x + " Tail y: " + body.get(body.size() - 1).y);
 //            System.out.println("Head idx: " +  headIdx + " tail idx: " + tailIdx + " order: " + order);
-                    
+
             List<Point> moveSeq = algo.hamSolve();
             return moveSeq.get(0).equals(new Point(0, 0)) ? getMoveSequence(body.get(0), cycle) : moveSeq;
         }
