@@ -1,8 +1,7 @@
-package com.mygdx.snake.algos;
+package com.mygdx.snake.algorithms.utilities;
 
 import com.mygdx.snake.Game;
 import com.mygdx.snake.Point;
-import com.mygdx.snake.Square;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +46,7 @@ public class GridUtils {
         return tmp;
     }
     private boolean checkInBounds(Point p) {
-        if (p.x < 0 || p.x >= Game.WIDTH || p.y < 0 || p.y >= Game.HEIGHT) return false;
-        return true;
+        return !(p.x < 0) && !(p.x >= Game.WIDTH) && !(p.y < 0) && !(p.y >= Game.HEIGHT);
     }
     public ArrayList<Point> getNotLostNeighbors(Point p) {
         ArrayList<Point> tmp = new ArrayList<>();

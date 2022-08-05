@@ -1,8 +1,9 @@
-package com.mygdx.snake.algos;
+package com.mygdx.snake.algorithms;
 
 import com.mygdx.snake.Food;
 import com.mygdx.snake.Game;
 import com.mygdx.snake.Point;
+import com.mygdx.snake.algorithms.utilities.GridUtils;
 
 import java.util.*;
 
@@ -79,7 +80,6 @@ public class CycleShortcut {
                 calculate(current, neighbor);
             }
         }
-        System.out.println("End of hamilton");
         return new ArrayList<>(Arrays.asList(new Point(0, 0)));
     }
 
@@ -119,6 +119,7 @@ public class CycleShortcut {
         }
         return res;
     }
+
     private void calculate(Point current, Point neighbor) {
         double tmpGScore = gScore.getOrDefault(current, INF) + 1;
         if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {

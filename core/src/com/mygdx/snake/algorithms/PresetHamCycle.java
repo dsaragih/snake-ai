@@ -1,4 +1,4 @@
-package com.mygdx.snake.algos;
+package com.mygdx.snake.algorithms;
 
 import com.mygdx.snake.Game;
 import com.mygdx.snake.Point;

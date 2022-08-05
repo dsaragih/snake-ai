@@ -1,7 +1,7 @@
-package com.mygdx.snake.algos;
+package com.mygdx.snake.algorithms.utilities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import com.mygdx.snake.Point;
 
 public class Node extends Point {
@@ -13,6 +13,7 @@ public class Node extends Point {
         prev = null;
         next = new ArrayList<>();
     }
+    public Node getPrev() { return prev; }
 
     public void setPrev(Node n) {prev = n;}
 

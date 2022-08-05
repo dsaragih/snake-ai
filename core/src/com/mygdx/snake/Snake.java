@@ -3,10 +3,8 @@ package com.mygdx.snake;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.snake.algos.*;
+import com.mygdx.snake.algorithms.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +36,7 @@ public class Snake {
             primHamCycle = new PrimHamCycle(new Point(head.x, head.y));
             callHamCycle(food);
         }
+        //if (moveSeq == null) callAStar(food);
 
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
@@ -49,23 +48,24 @@ public class Snake {
         dy = p.y;
         curr++;
 
-        float new_x = head.x + dx;
-        float new_y = head.y + dy;
-        head = new Square(new_x, new_y, Color.GREEN);
-        body.add(0, head);
+        moveSnake();
     }
     public void updatePlayer(Food food) {
         dirCalc();
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
         }
+        moveSnake();
+    }
 
+    private void moveSnake() {
         float new_x = head.x + dx;
         float new_y = head.y + dy;
         head = new Square(new_x, new_y, Color.GREEN);
 
         body.add(0, head);
     }
+
     private void callHamCycle(Food food) {
         moveSeq = primHamCycle.solve(getBodyPoint(), food);
         curr = 0;
@@ -91,9 +91,6 @@ public class Snake {
         }
         for (Square s : body.subList(1, body.size())) {
             if (head.overlaps(s)) {
-//                System.out.println("Headx: " + head.x + " Head y: " + head.y);
-//                System.out.println("Tail x: " + body.get(body.size() - 1).x + " Tail y: " + body.get(body.size() - 1).y);
-//                System.out.println("EAT " + s.x + " " + s.y);
                 return 1;
             }
         }

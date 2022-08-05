@@ -1,8 +1,10 @@
-package com.mygdx.snake.algos;
+package com.mygdx.snake.algorithms;
 
 import java.util.*;
 
 import com.mygdx.snake.*;
+import com.mygdx.snake.algorithms.utilities.AStarDFS;
+import com.mygdx.snake.algorithms.utilities.GridUtils;
 
 
 public class AStar {
@@ -38,7 +40,7 @@ public class AStar {
         q.add(start);
     }
     private double h(Point p) {
-        return -Math.sqrt(Math.pow(p.x - end.x, 2) - Math.pow(p.y - end.y, 2));
+        return -Math.sqrt(Math.pow(p.x - end.x, 2) + Math.pow(p.y - end.y, 2));
     }
 
     private int moveSnake(List<Point> seq, List<Point> body) {
@@ -52,11 +54,9 @@ public class AStar {
             body.add(0, head);
             grid.update(body);
         }
-        Stack<Point> stack = new Stack<>();
-        ArrayList<Point> visited = new ArrayList<>();
-        isPathTrapped(new Point(head.x, head.y), visited, stack);
+        AStarDFS dfs = new AStarDFS(grid);
 
-        return visited.size();
+        return dfs.getVisited(new Point(head.x, head.y)).size();
     }
 
     private ArrayList<Point> getMoveSequence(Point curr) {
@@ -71,31 +71,16 @@ public class AStar {
     }
     private void calculate(Point current, Point neighbor) {
         double tmpGScore = gScore.getOrDefault(current, INF) - 1;
-        //System.out.println("Neighs: " + neighbor.x + " " + neighbor.y );
-        if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
-            cameFrom.putIfAbsent(neighbor, current);
+
+        if (!gScore.containsKey(neighbor)) {
+            cameFrom.put(neighbor, current);
             gScore.put(neighbor, tmpGScore);
-            //System.out.println(tmpGScore + h(neighbor));
             fScore.put(neighbor, tmpGScore + h(neighbor));
             if (!q.contains(neighbor)) {
                 q.add(neighbor);
 
             }
         }
-    }
-
-    private void isPathTrapped(Point curr, ArrayList<Point> visited, Stack<Point> stack) {
-        visited.add(curr);
-        stack.add(curr);
-
-        if (visited.size() > (Game.SIZE - grid.body.size()) / 2) return;
-        for (Point neighbor : grid.getNotLostNeighbors(curr)) {
-            if (visited.contains(neighbor)) continue;
-            visited.add(neighbor);
-            stack.add(neighbor);
-            isPathTrapped(neighbor, visited, stack);
-        }
-        if (!stack.isEmpty()) stack.remove(curr);
     }
 
     public ArrayList<Point> solve() {
@@ -106,13 +91,12 @@ public class AStar {
 
             int score = moveSnake(seq, new ArrayList<>(body));
 
-            if (current.equals(end) && score > (Game.SIZE - grid.body.size() / 2)) {
+            if (current.equals(end) && score > (Game.SIZE - grid.body.size()) / 2) {
                 return seq;
-            }
+            } else if (current.equals(end)) return seq;
             for (Point neighbor : grid.getNotLostNeighbors(current)) {
                 calculate(current, neighbor);
             }
-
         }
         return new ArrayList<>(Arrays.asList(new Point(0, 0)));
     }

@@ -1,6 +1,9 @@
-package com.mygdx.snake.algos;
+package com.mygdx.snake.algorithms;
 import com.mygdx.snake.Game;
 import com.mygdx.snake.Point;
+import com.mygdx.snake.algorithms.utilities.GridUtils;
+import com.mygdx.snake.algorithms.utilities.Node;
+import com.mygdx.snake.algorithms.utilities.PrimGridUtils;
 
 import java.util.*;
 
@@ -35,7 +38,7 @@ public class PrimMST {
             Node minNode = min();
             vertices.remove(minNode);
             mstSet.add(minNode);
-            if (minNode.prev != null) minNode.prev.addNext(minNode);
+            if (minNode.getPrev() != null) minNode.getPrev().addNext(minNode);
 
             // Add a bit of randomness between spanning trees.
             ArrayList<Node> neighbors = primGrid.getNeighbors(minNode);

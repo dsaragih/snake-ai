@@ -4,21 +4,25 @@ import com.badlogic.gdx.ApplicationAdapter;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import static java.lang.Thread.sleep;
 
 public class Game extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 	OrthographicCamera camera;
-	SpriteBatch batch;
-	public final static int WIDTH = 400;
-	public final static int HEIGHT = 400;
+	Stage stage;
+	public final static int WIDTH = 160;
+	public final static int HEIGHT = 160;
 	public final static int SQUARE_SIZE = 20;
 	public final static int SIZE = (WIDTH * HEIGHT) / (SQUARE_SIZE * SQUARE_SIZE);
 	Snake snake;
@@ -29,7 +33,7 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create () {
 		shapeRenderer = new ShapeRenderer();
-		batch = new SpriteBatch();
+		stage = new Stage(new ScreenViewport());
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WIDTH, HEIGHT);
 		snake = new Snake(SQUARE_SIZE,  SQUARE_SIZE);
@@ -53,23 +57,29 @@ public class Game extends ApplicationAdapter {
 		stagger(delay);
 	}
 
-	private void drawStart() {
-		batch.begin();
-		BitmapFont font = new BitmapFont();
-		font.draw(batch, "Press M to control snake", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
-		batch.end();
+	private void drawStart(Label.LabelStyle style) {
+		Label label = new Label("Press M to control snake", style);
+		label.setPosition(0, Gdx.graphics.getHeight() / 2f);
+		label.setSize(Gdx.graphics.getWidth(), 20);
+		label.setAlignment(Align.center);
+		label.setFontScale(1.5f);
+		stage.addActor(label);
 	}
-	private void drawEnd() {
-		batch.begin();
-		BitmapFont font = new BitmapFont();
-		font.draw(batch, "Press SPACE to restart", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
-		batch.end();
+	private void drawEnd(Label.LabelStyle style) {
+		Label label = new Label("Press SPACE to restart", style);
+		label.setPosition(0, Gdx.graphics.getHeight() / 2f);
+		label.setSize(Gdx.graphics.getWidth(), 20);
+		label.setAlignment(Align.center);
+		label.setFontScale(1.5f);
+		stage.addActor(label);
 	}
-	private void drawWin() {
-		batch.begin();
-		BitmapFont font = new BitmapFont();
-		font.draw(batch, "Winner! Press SPACE to restart!!", WIDTH/2f, HEIGHT/2f, 0, WIDTH, false);
-		batch.end();
+	private void drawWin(Label.LabelStyle style) {
+		Label label = new Label("You've WON! Press SPACE to restart", style);
+		label.setPosition(0, Gdx.graphics.getHeight() / 2f);
+		label.setSize(Gdx.graphics.getWidth(), 20);
+		label.setAlignment(Align.center);
+		label.setFontScale(1.5f);
+		stage.addActor(label);
 	}
 	private void stagger(int delay) {
 		try {
@@ -82,18 +92,23 @@ public class Game extends ApplicationAdapter {
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 1);
 		camera.update();
+
+		Label.LabelStyle labelStyle = new Label.LabelStyle();
+		labelStyle.font = new BitmapFont();
+		labelStyle.fontColor = Color.BLUE;
+
 		if (gameEnd == 0) {
 			update();
-			drawStart();
+			drawStart(labelStyle);
 		} else if (gameEnd == 1) {
-			drawEnd();
+			drawEnd(labelStyle);
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 				gameEnd = 0;
 				PlayerControl = false;
 				create();
 			}
 		} else {
-			drawWin();
+			drawWin(labelStyle);
 			food.updateWin();
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 				gameEnd = 0;
@@ -101,16 +116,19 @@ public class Game extends ApplicationAdapter {
 				create();
 			}
 		}
+		stage.act();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin(ShapeType.Filled);
 		snake.draw(shapeRenderer);
 		food.draw(shapeRenderer);
 		shapeRenderer.end();
+		stage.draw();
+		stage.clear();
 	}
 	
 	@Override
 	public void dispose () {
 		shapeRenderer.dispose();
-		batch.dispose();
+		stage.dispose();
 	}
 }
