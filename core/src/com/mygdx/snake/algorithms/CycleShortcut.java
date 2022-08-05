@@ -3,7 +3,7 @@ package com.mygdx.snake.algorithms;
 import com.mygdx.snake.Food;
 import com.mygdx.snake.Game;
 import com.mygdx.snake.Point;
-import com.mygdx.snake.algorithms.utilities.GridUtils;
+import com.mygdx.snake.algorithms.utilities.AStarUtils;
 
 import java.util.*;
 
@@ -12,19 +12,19 @@ public class CycleShortcut {
     HashMap<Point, Double> fScore;
     HashMap<Point, Point> cameFrom;
     PriorityQueue<Point> q;
-    GridUtils grid;
+    AStarUtils util;
     List<Point> body;
     List<Point> cycle;
     Point start;
-    private double INF = Double.POSITIVE_INFINITY;
+    private final double INF = Double.POSITIVE_INFINITY;
     Point end;
 
     public CycleShortcut(List<Point> body, Food food, List<Point> cycle) {
-        grid = new GridUtils(body);
+        this.util = new AStarUtils(body);
         this.cycle = cycle;
         this.body = body;
-        start = grid.getPoint(body.get(0));
-        end = grid.getPoint(food.x, food.y);
+        start = util.getPoint(body.get(0));
+        end = util.getPoint(food.x, food.y);
         gScore = new HashMap<>();
         fScore = new HashMap<>();
         cameFrom = new HashMap<>();
@@ -50,18 +50,6 @@ public class CycleShortcut {
             return endIdx + Game.SIZE - currIdx;
         }
     }
-    private void moveSnake(List<Point> seq, List<Point> body) {
-        Point head;
-        for (Point dir : seq) {
-            head = body.get(0);
-            body.remove(body.size() - 1);
-            float new_x = head.x + dir.x;
-            float new_y = head.y + dir.y;
-            head = new Point(new_x, new_y);
-            body.add(0, head);
-            grid.update(body);
-        }
-    }
     public ArrayList<Point> hamSolve() {
         /*
         Given the position of the food, find shortcuts through the Hamiltonian cycle to
@@ -69,13 +57,13 @@ public class CycleShortcut {
          */
         while (!q.isEmpty()) {
             Point current = q.poll();
-            ArrayList<Point> seq = getMoveSequence(current);
-            moveSnake(seq, new ArrayList<>(body));
+            ArrayList<Point> seq = util.getMoveSequence(current, cameFrom);
+            util.moveSnake(seq, new ArrayList<>(body));
 
             if (current.equals(end)) {
                 return seq;
             }
-            for (Point neighbor : grid.getNotLostNeighbors(current)) {
+            for (Point neighbor : util.getNotLostNeighbors(current)) {
                 if (!respectsOrder(current, neighbor)) continue;
                 calculate(current, neighbor);
             }
@@ -96,7 +84,7 @@ public class CycleShortcut {
         Order: tail - head - tail
         Precondition: Order respected
          */
-        Point tail = grid.body.get(grid.body.size() - 1);
+        Point tail = util.body.get(util.body.size() - 1);
         int tailIdx = whereInCycle(tail);
         int headIdx = whereInCycle(curr);
         int nextIdx = whereInCycle(next);
@@ -109,16 +97,6 @@ public class CycleShortcut {
         }
     }
 
-    private ArrayList<Point> getMoveSequence(Point curr) {
-        // This is a bit of an abuse of language, but Point here is essentially a vector
-        ArrayList<Point> res = new ArrayList<>();
-        while(cameFrom.containsKey(curr)) {
-            Point prev = cameFrom.get(curr);
-            res.add(0, new Point(curr.x - prev.x, curr.y - prev.y));
-            curr = prev;
-        }
-        return res;
-    }
 
     private void calculate(Point current, Point neighbor) {
         double tmpGScore = gScore.getOrDefault(current, INF) + 1;

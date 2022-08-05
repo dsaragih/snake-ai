@@ -3,26 +3,25 @@ package com.mygdx.snake.algorithms;
 import java.util.*;
 
 import com.mygdx.snake.*;
-import com.mygdx.snake.algorithms.utilities.AStarDFS;
-import com.mygdx.snake.algorithms.utilities.GridUtils;
+import com.mygdx.snake.algorithms.utilities.AStarUtils;
 
 
-public class AStar {
+public class LongAStar {
     HashMap<Point, Double> gScore;
     HashMap<Point, Double> fScore;
     HashMap<Point, Point> cameFrom;
     PriorityQueue<Point> q;
-    GridUtils grid;
+    AStarUtils util;
     List<Point> body;
     Point start;
     private final double INF = Double.POSITIVE_INFINITY;
     Point end;
 
-    public AStar(List<Point> body, Food food) {
-        grid = new GridUtils(body);
+    public LongAStar(List<Point> body, Food food) {
+        util = new AStarUtils(body);
         this.body = body;
-        start = grid.getPoint(body.get(0));
-        end = grid.getPoint(food.x, food.y);
+        start = util.getPoint(body.get(0));
+        end = util.getPoint(food.x, food.y);
         gScore = new HashMap<>();
         fScore = new HashMap<>();
         cameFrom = new HashMap<>();
@@ -43,32 +42,6 @@ public class AStar {
         return -Math.sqrt(Math.pow(p.x - end.x, 2) + Math.pow(p.y - end.y, 2));
     }
 
-    private int moveSnake(List<Point> seq, List<Point> body) {
-        Point head = body.get(0);
-        for (Point dir : seq) {
-            head = body.get(0);
-            body.remove(body.size() - 1);
-            float new_x = head.x + dir.x;
-            float new_y = head.y + dir.y;
-            head = new Point(new_x, new_y);
-            body.add(0, head);
-            grid.update(body);
-        }
-        AStarDFS dfs = new AStarDFS(grid);
-
-        return dfs.getVisited(new Point(head.x, head.y)).size();
-    }
-
-    private ArrayList<Point> getMoveSequence(Point curr) {
-        // This is a bit of an abuse of language, but Point here is essentially a vector
-        ArrayList<Point> res = new ArrayList<>();
-        while(cameFrom.containsKey(curr)) {
-            Point prev = cameFrom.get(curr);
-            res.add(0, new Point(curr.x - prev.x, curr.y - prev.y));
-            curr = prev;
-        }
-        return res;
-    }
     private void calculate(Point current, Point neighbor) {
         double tmpGScore = gScore.getOrDefault(current, INF) - 1;
 
@@ -87,14 +60,14 @@ public class AStar {
         Point current;
         while (!q.isEmpty()) {
             current = q.poll();
-            ArrayList<Point> seq = getMoveSequence(current);
+            ArrayList<Point> seq = util.getMoveSequence(current, cameFrom);
 
-            int score = moveSnake(seq, new ArrayList<>(body));
+            int score = util.moveSnake(seq, new ArrayList<>(body));
 
-            if (current.equals(end) && score > (Game.SIZE - grid.body.size()) / 2) {
+            if (current.equals(end) && score > (Game.SIZE - util.body.size()) / 2) {
                 return seq;
             } else if (current.equals(end)) return seq;
-            for (Point neighbor : grid.getNotLostNeighbors(current)) {
+            for (Point neighbor : util.getNotLostNeighbors(current)) {
                 calculate(current, neighbor);
             }
         }

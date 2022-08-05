@@ -36,7 +36,7 @@ public class Snake {
             primHamCycle = new PrimHamCycle(new Point(head.x, head.y));
             callHamCycle(food);
         }
-        //if (moveSeq == null) callAStar(food);
+        //if (moveSeq == null) callShortAStar(food);
 
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
@@ -71,8 +71,14 @@ public class Snake {
         curr = 0;
     }
 
-    private void callAStar(Food food) {
-        AStar algo = new AStar(getBodyPoint(), food);
+    private void callLongAStar(Food food) {
+        LongAStar algo = new LongAStar(getBodyPoint(), food);
+        moveSeq = algo.solve();
+        curr = 0;
+    }
+
+    private void callShortAStar(Food food) {
+        ShortAStar algo = new ShortAStar(getBodyPoint(), food);
         moveSeq = algo.solve();
         curr = 0;
     }

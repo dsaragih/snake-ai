@@ -21,8 +21,8 @@ public class Game extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 	OrthographicCamera camera;
 	Stage stage;
-	public final static int WIDTH = 160;
-	public final static int HEIGHT = 160;
+	public final static int WIDTH = 400;
+	public final static int HEIGHT = 400;
 	public final static int SQUARE_SIZE = 20;
 	public final static int SIZE = (WIDTH * HEIGHT) / (SQUARE_SIZE * SQUARE_SIZE);
 	Snake snake;
