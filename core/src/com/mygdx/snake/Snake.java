@@ -84,7 +84,7 @@ public class Snake {
     }
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
-            if (body.size() < (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) food.renew(body);
+            if (body.size() < Game.SIZE) food.renew(body);
             callHamCycle(food);
             return true;
         }
@@ -100,7 +100,7 @@ public class Snake {
                 return 1;
             }
         }
-        if (body.size() == (Game.WIDTH * Game.HEIGHT) / (Game.SQUARE_SIZE * Game.SQUARE_SIZE)) {
+        if (body.size() == Game.SIZE) {
             return 2;
         }
         return 0;
@@ -113,8 +113,7 @@ public class Snake {
         else if ((Gdx.input.isKeyPressed(Input.Keys.S)) && dy < 1) { dx = 0; dy = -Game.SQUARE_SIZE;}
     }
     public void draw(ShapeRenderer shapeRenderer) {
-        body.get(0).draw(shapeRenderer);
-        for (Square square: body.subList(1, body.size())) {
+        for (Square square: body) {
             square.draw(shapeRenderer);
         }
     }
