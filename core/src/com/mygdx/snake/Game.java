@@ -107,7 +107,7 @@ public class Game extends ApplicationAdapter {
 				PlayerControl = false;
 				create();
 			}
-		} else {
+		} else if (gameEnd == 2) {
 			drawWin(labelStyle);
 			food.updateWin();
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {

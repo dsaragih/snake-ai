@@ -36,7 +36,7 @@ public class Snake {
             primHamCycle = new PrimHamCycle(new Point(head.x, head.y));
             callHamCycle(food);
         }
-        //if (moveSeq == null) callShortAStar(food);
+        //if (moveSeq == null) callLongAStar(food);
 
         if (!checkCollideWithFood(food)) {
             body.remove(body.size() - 1);
@@ -59,9 +59,10 @@ public class Snake {
     }
 
     private void moveSnake() {
+        head.setColor(Color.GREEN);
         float new_x = head.x + dx;
         float new_y = head.y + dy;
-        head = new Square(new_x, new_y, Color.GREEN);
+        head = new Square(new_x, new_y, Color.YELLOW);
 
         body.add(0, head);
     }
@@ -84,7 +85,7 @@ public class Snake {
     }
     private boolean checkCollideWithFood(Food food) {
         if (head.overlaps(food)) {
-            if (body.size() < Game.SIZE) food.renew(body);
+            food.renew(body);
             callHamCycle(food);
             return true;
         }

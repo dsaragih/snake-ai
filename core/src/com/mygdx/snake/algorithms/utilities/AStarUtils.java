@@ -14,8 +14,6 @@ public class AStarUtils extends GridUtils {
 
     public AStarUtils(List<Point> body) {
         super(body);
-        this.visited = new ArrayList<>();
-        this.stack = new Stack<>();
     }
 
     private void search(Point curr) {
@@ -33,14 +31,20 @@ public class AStarUtils extends GridUtils {
     }
 
     public List<Point> getVisited(Point curr) {
+        this.visited = new ArrayList<>();
+        this.stack = new Stack<>();
         search(curr);
         return visited;
     }
 
     public int moveSnake(List<Point> seq, List<Point> body) {
         Point head = body.get(0);
+        int score;
         for (Point dir : seq) {
             head = body.get(0);
+            score = getVisited(new Point(head.x, head.y)).size();
+            if (score <= (Game.SIZE - body.size()) / 2) return score;
+
             body.remove(body.size() - 1);
             float new_x = head.x + dir.x;
             float new_y = head.y + dir.y;

@@ -45,7 +45,7 @@ public class LongAStar {
     private void calculate(Point current, Point neighbor) {
         double tmpGScore = gScore.getOrDefault(current, INF) - 1;
 
-        if (!gScore.containsKey(neighbor)) {
+        if (tmpGScore < gScore.getOrDefault(neighbor, INF)) {
             cameFrom.put(neighbor, current);
             gScore.put(neighbor, tmpGScore);
             fScore.put(neighbor, tmpGScore + h(neighbor));
@@ -56,21 +56,58 @@ public class LongAStar {
         }
     }
 
-    public ArrayList<Point> solve() {
+    private List<Point> stayAlive(Point head) {
+        Point bestPoint = head;
+        int bestScore = 0;
+        util.update(body);
+
+        for (Point neighbor : util.getNotLostNeighbors(head)) {
+            int score = util.getVisited(neighbor).size();
+
+            if (score >= bestScore) {
+                bestPoint = neighbor;
+                bestScore = score;
+            }
+        }
+        ArrayList<Point> res = new ArrayList<>();
+        res.add(new Point(bestPoint.x - start.x, bestPoint.y - start.y));
+        return res;
+    }
+
+    private boolean inOthersMoveSeq(Point current, Point neighbor) {
+        Point iter1 = neighbor;
+        while(cameFrom.containsKey(iter1)) {
+            iter1 = cameFrom.get(iter1);
+            if (iter1.equals(current)) return true;
+        }
+        Point iter2 = current;
+        while(cameFrom.containsKey(iter2)) {
+            iter2 = cameFrom.get(iter2);
+            if (iter2.equals(neighbor)) return true;
+        }
+        return false;
+    }
+
+    public List<Point> solve() {
+
         Point current;
+        int threshold = (Game.SIZE - util.body.size()) / 2;
         while (!q.isEmpty()) {
             current = q.poll();
             ArrayList<Point> seq = util.getMoveSequence(current, cameFrom);
 
             int score = util.moveSnake(seq, new ArrayList<>(body));
 
-            if (current.equals(end) && score > (Game.SIZE - util.body.size()) / 2) {
+            if (current.equals(end) && score > threshold) {
                 return seq;
-            } else if (current.equals(end)) return seq;
-            for (Point neighbor : util.getNotLostNeighbors(current)) {
-                calculate(current, neighbor);
+            }
+            if (score > threshold) {
+                for (Point neighbor : util.getNotLostNeighbors(current)) {
+                    if (inOthersMoveSeq(current, neighbor)) continue;
+                    calculate(current, neighbor);
+                }
             }
         }
-        return new ArrayList<>(Arrays.asList(new Point(0, 0)));
+        return stayAlive(start);
     }
 }

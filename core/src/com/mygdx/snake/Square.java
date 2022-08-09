@@ -14,4 +14,5 @@ public class Square extends Rectangle {
         shapeRenderer.setColor(color);
         shapeRenderer.rect(x, y, width, height); // it's a square
     }
+    public void setColor(Color color) { this.color = color; }
 }
